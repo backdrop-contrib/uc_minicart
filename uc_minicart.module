@@ -1,0 +1,120 @@
+<?php
+  
+/**
+ * Implements hook_block_info().
+ */
+function uc_minicart_block_info() {
+  $blocks = array();
+
+  $blocks['minicart'] = array(
+    'info' => t('Mini Shopping cart'),
+    'description' => t('Displays a minimal shopping cart block.'),
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function uc_minicart_block_view($delta = '', $settings = array(), $contexts = array()) {
+  $config = config('uc_minicart.settings');
+  global $user;
+  if ($delta == 'minicart') {
+    $product_count = count(uc_cart_get_contents());
+
+    // Display nothing if the block is empty.
+    if ($product_count) {
+      // Add the cart block CSS.
+      backdrop_add_css(backdrop_get_path('module', 'uc_minicart') . '/uc_minicart.css');
+
+      $items = FALSE;
+      $item_count = 0;
+      $total = 0;
+
+      if ($product_count) {
+        $display_items = entity_plus_view('uc_cart_item', uc_cart_get_contents(), 'cart');
+        foreach (element_children($display_items['uc_cart_item']) as $key) {
+          $display_item = $display_items['uc_cart_item'][$key];
+
+          if (count(element_children($display_item))) {
+            $items[] = array(
+              'nid' => $display_item['nid']['#value'],
+              'qty' => theme('uc_qty', array('qty' => $display_item['qty']['#default_value'])),
+              'title' => $display_item['title']['#markup'],
+              'price' => $display_item['#total'],
+              'desc' => isset($display_item['description']['#markup']) ? $display_item['description']['#markup'] : FALSE,
+            );
+            $total += $display_item['#total'];
+            $item_count += $display_item['qty']['#default_value'];
+          }
+
+        }
+      }
+
+      // Build the item count text and cart links.
+      $item_text = format_plural($item_count, '<span class="num-items">1</span> item', '<span class="num-items">@count</span> items');
+
+      $summary_links = array(
+        'cart-block-view-cart' => array(
+          'title' => t('View cart'),
+          'href' => 'cart',
+          'attributes' => array('rel' => 'nofollow'),
+        ),
+      );
+
+      // Only add the checkout link if checkout is enabled.
+      if (config_get('uc_cart.settings','uc_checkout_enabled')) {
+        $summary_links['cart-block-checkout'] = array(
+          'title' => t('Checkout'),
+          'href' => 'cart/checkout',
+          'attributes' => array('rel' => 'nofollow'),
+        );
+      }
+
+      $block['subject'] = t('Shopping cart');
+      // Build minimal display: Cart, Checkout links and summary info.
+      $block_content = "<div>";
+      $block_content .= l('<i class="fas fa-shopping-cart" title="' . t('View cart') . '"></i> ' . $item_text . ' (' . theme('uc_price', array('price' => $total)) . ')', 'cart', array('html' => TRUE));
+      // Only add the checkout link if checkout is enabled.
+      if (config_get('uc_cart.settings','uc_checkout_enabled')) {
+        $block_content .= l('<i class="fas fa-credit-card" title="' . t('Checkout') . '"></i>', 'cart/checkout', array('html' => TRUE));
+      }
+
+      $block_content .= "</div>";
+      $block['content'] = $block_content;
+
+      return $block;
+    }
+  }
+}
+
+/**
+ * Implements hook_block_configure().
+ *
+ * Builds the settings form used by the shopping cart block.
+ */
+function uc_minicart_block_configure($delta = '', $settings = array()) {
+  $config = config('uc_minicart.settings');
+  if ($delta == 'cart') {
+    $form['uc_minicart_block_image'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Display the shopping cart icon in the block title.'),
+      '#default_value' => $config->get('uc_minicart_block_image'),
+    );
+
+    return $form;
+  }
+}
+
+/**
+ * Implements hook_block_save().
+ *
+ * Saves the shopping cart block settings.
+ */
+function uc_minicart_block_save($delta = '', $edit = array()) {
+  if ($delta == 'cart') {
+    config_set('uc_minicart.settings', 'uc_minicart_block_image', $edit['uc_minicart_block_image']);
+  }
+}
+
