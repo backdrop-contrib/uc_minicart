@@ -1,8 +1,8 @@
 name = Ubercart Mini Cart Block
-description = Provide a minimal shopping cart block.
+description = Provides a minimal shopping cart block.
 package = Ubercart
 backdrop = 1.x
 type = module
 
-dependencies[] = rules (>= 2.1.0)
-dependencies = uc_cart
+dependencies[] = ubercart
+dependencies[] = font_awesome
