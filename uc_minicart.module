@@ -1,5 +1,27 @@
 <?php
-  
+
+/**
+ * @file
+ */
+
+/**
+ * Implements hook_library_info().
+ */
+function uc_minicart_library_info() {
+  $module_info = system_get_info('module', 'uc_minicart');
+  $module_path = backdrop_get_path('module', 'uc_minicart');
+  $libraries['uc_minicart'] = array(
+    'title' => 'UC Minicart',
+    'website' => 'https://backdropcms.org/project/uc_minicart',
+    'version' => $module_info['version'],
+    'css' => array(
+      $module_path . '/css/uc_minicart.css',
+    ),
+  );
+
+  return $libraries;
+}
+
 /**
  * Implements hook_block_info().
  */
@@ -18,15 +40,12 @@ function uc_minicart_block_info() {
  * Implements hook_block_view().
  */
 function uc_minicart_block_view($delta = '', $settings = array(), $contexts = array()) {
-  $config = config('uc_minicart.settings');
-  global $user;
   if ($delta == 'minicart') {
     $product_count = count(uc_cart_get_contents());
 
-    // Display nothing if the block is empty.
     if ($product_count) {
       // Add the cart block CSS.
-      backdrop_add_css(backdrop_get_path('module', 'uc_minicart') . '/uc_minicart.css');
+      backdrop_add_library('uc_minicart', 'uc_minicart');
 
       $items = FALSE;
       $item_count = 0;
@@ -52,35 +71,15 @@ function uc_minicart_block_view($delta = '', $settings = array(), $contexts = ar
         }
       }
 
+      $block['subject'] = t('Shopping cart');
       // Build the item count text and cart links.
       $item_text = format_plural($item_count, '<span class="num-items">1</span> item', '<span class="num-items">@count</span> items');
-
-      $summary_links = array(
-        'cart-block-view-cart' => array(
-          'title' => t('View cart'),
-          'href' => 'cart',
-          'attributes' => array('rel' => 'nofollow'),
-        ),
-      );
-
+      $block_content = "<div class='uc-minicart'>";
+      $block_content .= l(icon('shopping-cart-fill', ['alt' => t('View cart')]) . $item_text . ' (' . theme('uc_price', array('price' => $total)) . ')', 'cart', array('html' => TRUE));
       // Only add the checkout link if checkout is enabled.
-      if (config_get('uc_cart.settings','uc_checkout_enabled')) {
-        $summary_links['cart-block-checkout'] = array(
-          'title' => t('Checkout'),
-          'href' => 'cart/checkout',
-          'attributes' => array('rel' => 'nofollow'),
-        );
+      if (config_get('uc_cart.settings', 'uc_checkout_enabled')) {
+        $block_content .= l(icon('credit-card-fill', ['alt' => t('Checkout')]), 'cart/checkout', array('html' => TRUE));
       }
-
-      $block['subject'] = t('Shopping cart');
-      // Build minimal display: Cart, Checkout links and summary info.
-      $block_content = "<div>";
-      $block_content .= l('<i class="fas fa-shopping-cart" title="' . t('View cart') . '"></i> ' . $item_text . ' (' . theme('uc_price', array('price' => $total)) . ')', 'cart', array('html' => TRUE));
-      // Only add the checkout link if checkout is enabled.
-      if (config_get('uc_cart.settings','uc_checkout_enabled')) {
-        $block_content .= l('<i class="fas fa-credit-card" title="' . t('Checkout') . '"></i>', 'cart/checkout', array('html' => TRUE));
-      }
-
       $block_content .= "</div>";
       $block['content'] = $block_content;
 
@@ -117,4 +116,3 @@ function uc_minicart_block_save($delta = '', $edit = array()) {
     config_set('uc_minicart.settings', 'uc_minicart_block_image', $edit['uc_minicart_block_image']);
   }
 }
-
