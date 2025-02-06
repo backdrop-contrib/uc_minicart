@@ -1,0 +1,19 @@
+.uc-minicart {
+  display: flex;
+  gap: .25rem;
+}
+
+.uc-minicart a {
+  display: inline-flex;
+  font-size: 1rem;
+  font-weight: normal;
+}
+
+.uc-minicart svg.icon {
+  height: 1.75rem;
+  width: 1.75rem;
+}
+
+.uc-minicart span.num-items {
+  padding-inline: .25rem;
+}

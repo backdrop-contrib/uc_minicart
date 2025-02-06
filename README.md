@@ -1,6 +1,6 @@
 # UC MiniCart
 
-A minimal cart block for Ubercart, with simple links to the cart and the 
+A minimal cart block for Ubercart, with simple links to the cart and the
 checkout page.
 
 > ![UC Minicart screenshot.](https://github.com/backdrop-contrib/uc_minicart/blob/1.x-1.x/images/uc_minicart.jpg "UC Minicart screenshot")
@@ -13,7 +13,6 @@ checkout page.
 ## Dependencies
 
  - [Ubercart](https://github.com/backdrop-contrib/ubercart)
- - [Font Awesome](https://github.com/backdrop-contrib/font_awesome/) (for the cart/checkout icons)
 
 ## Issues
 
@@ -21,11 +20,12 @@ checkout page.
 
 ## Current Maintainers
 
- - [Laryn Kragt Bakker](https://github.com/laryn) - [CEDC.org](https://cedc.org)
+ - [Laryn Kragt Bakker](https://github.com/laryn)
 
 ## Credits
 
- - Created for Backdrop by [Laryn Kragt Bakker](https://github.com/laryn) - [CEDC.org](https://cedc.org)
+ - Created for Backdrop by [Laryn Kragt Bakker](https://github.com/laryn)
+ - Initial development was sponsored by [CEDC.org](https://cedc.org)
 
 ## License
 

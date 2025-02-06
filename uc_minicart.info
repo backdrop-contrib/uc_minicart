@@ -5,4 +5,4 @@ backdrop = 1.x
 type = module
 
 dependencies[] = ubercart
-dependencies[] = font_awesome
+dependencies[] = system (>=1.28)
